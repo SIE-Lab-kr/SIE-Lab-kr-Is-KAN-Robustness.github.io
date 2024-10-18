@@ -4,8 +4,324 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neural Networks Adversarial Robustness Evaluation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="tabs.js" defer></script> <!-- JavaScript to handle tab functionality -->
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f9fafc;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Section */
+        .header-section {
+            background-color: #7aa3cc;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            max-width: 100px;
+            max-height: 80px;
+            object-fit: contain;
+        }
+
+        /* Title Section */
+        .title-section {
+            text-align: center;
+            padding: 40px;
+            background-color: #ffffff;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .title-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #003366;
+        }
+
+        .title-section h2, .title-section h3 {
+            font-weight: 300;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        a {
+            color: #1664b8;
+            text-decoration: none;
+        }
+
+        /* Abstract Section */
+        .abstract-section {
+            text-align: center;
+            padding: 30px;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .abstract-section h4 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #003366;
+        }
+
+        .abstract-section p {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Tabs Styling */
+        .tabs {
+            overflow: hidden;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding-top: 10px;
+            border-radius: 10px;
+        }
+
+        .tablink {
+            background-color: inherit;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 15px 25px;
+            transition: 0.3s;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .tablink:hover {
+            background-color: #ccc;
+            color: #333;
+        }
+
+        .tablink.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .tabcontent.active {
+            display: block;
+        }
+
+        /* Nested Tabs Styling */
+        .nested-tabs {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nested-tablink {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 15px;
+            transition: 0.3s;
+            font-size: 1rem;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .nested-tablink:hover {
+            background-color: #0056b3;
+        }
+
+        .nested-tabcontent {
+            display: none;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nested-tabcontent.active {
+            display: block;
+        }
+
+        /* Image Styling */
+        .model-image, .dataset-image, .attack-image {
+            width: 100%;
+            height: 300px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sliders Styling */
+        .slider-container {
+            position: relative;
+            max-width: 600px;
+            margin: 20px auto;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .slide img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .slide h6 {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            color: #003366;
+        }
+
+        .slide p {
+            font-size: 1rem;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        /* Navigation Buttons */
+        button.prev, button.next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: 1.5rem;
+        }
+
+        button.prev {
+            left: 10px;
+        }
+
+        button.next {
+            right: 10px;
+        }
+
+        button.prev:hover, button.next:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: #7aa3cc;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Full-size Image Button */
+        .view-full-btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-full-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Set the first model tab as active when page loads
+            document.querySelector(".tablink").classList.add("active");
+            document.getElementById("model1").classList.add("active");
+        });
+
+        function openFullImage(url) {
+            window.open(url, '_blank').focus();
+        }
+    </script>
 </head>
 <body>
 
@@ -25,119 +341,319 @@
         <h3>Affiliations: Software Intelligence Engineering Lab, Chungbuk National University</h3>
         <h3>Visit Our Lab: <a href="https://selab.chungbuk.ac.kr/" target="_blank">https://selab.chungbuk.ac.kr/</a></h3>
     </section>
+
     <!-- Action Buttons -->
     <div class="action-buttons">
-        <a href="paper.pdf" class="btn">Paper</a>
+        <a href="paper.pdf" class="btn">Download Paper</a>
         <a href="bibtex.bib" class="btn">BibTeX</a>
-        <!-- <a href="poster.pdf" class="btn">Poster</a>
-        <a href="presentation.pdf" class="btn">Presentation</a> -->
     </div>
-
+    
     <!-- Abstract Section -->
     <section class="abstract-section">
-        <h3>Abstract</h3>
-        <p>This research evaluates the robustness of several neural network architectures against adversarial attacks...</p>
+        <h4>Abstract</h4>
+        <p>This project focuses on evaluating the robustness of neural networks against adversarial attacks. We explore various neural network architectures, including KAN, Multi-Layer Perceptron (MLP), and Convolutional Neural Network (CNN). Each model is evaluated using different datasets and subjected to common adversarial attacks, such as FGSM, PGD, and CW. The aim is to determine the strengths and weaknesses of each model's architecture when facing adversarial perturbations.</p>
     </section>
 
-    <!-- Tabs for Datasets -->
+    <!-- Models Section -->
     <section class="content-section">
-        <h3>Datasets and Attack/Defense Methods</h3>
+        <h3>Model Architectures and Evaluation</h3>
 
-        <!-- Dataset Tabs -->
+        <!-- Model Tabs -->
         <div class="tabs">
-            <button class="tablink" onclick="openDataset(event, 'Dataset1')">Dataset 1</button>
-            <button class="tablink" onclick="openDataset(event, 'Dataset2')">Dataset 2</button>
-            <button class="tablink" onclick="openDataset(event, 'Dataset3')">Dataset 3</button>
+            <button class="tablink" onclick="openTab(event, 'model1')">Model 1: KAN</button>
+            <button class="tablink" onclick="openTab(event, 'model2')">Model 2: MLP</button>
+            <button class="tablink" onclick="openTab(event, 'model3')">Model 3: CNN</button>
         </div>
 
-        <!-- Content for Dataset 1 -->
-        <div id="Dataset1" class="tabcontent">
-            <h4>Dataset 1: Attack and Defense Methods</h4>
-            <div class="sub-tabs">
-                <button class="sub-tablink" onclick="openMethod(event, 'FGSM1')">FGSM</button>
-                <button class="sub-tablink" onclick="openMethod(event, 'PGD1')">PGD</button>
-                <button class="sub-tablink" onclick="openMethod(event, 'CW1')">CW</button>
+        <!-- Content for Model 1 -->
+        <div id="model1" class="tabcontent">
+            <h4>Model 1: KAN</h4>
+
+            <!-- Nested Tabs for Model 1 -->
+            <div class="nested-tabs">
+                <button class="nested-tablink" onclick="openNestedTab(event, 'model1-description')">Model Description</button>
+                <button class="nested-tablink" onclick="openNestedTab(event, 'model1-dataset')">Dataset Description</button>
+                <button class="nested-tablink" onclick="openNestedTab(event, 'model1-attacks')">Attack Methods</button>
             </div>
 
-            <div id="FGSM1" class="method-content">
-                <h5>FGSM Attack Results</h5>
-                <img src="images/111.png" alt="FGSM Results for Dataset 1">
-                <p>Description of FGSM attack results on Dataset 1, analyzing the model's robustness against fast gradient sign method.</p>
+            <!-- Model 1 Description Section -->
+            <div id="model1-description" class="nested-tabcontent active">
+                <h5>Description of KAN Model</h5>
+                <img src="images/11.png" alt="KAN Model" class="model-image">
+                <p>The KAN is designed to leverage domain-specific knowledge to improve adversarial robustness. It enhances the capability of neural networks to adapt to adversarial attacks by incorporating structured domain information effectively.</p>
             </div>
 
-            <div id="PGD1" class="method-content" style="display:none;">
-                <h5>PGD Attack Results</h5>
-                <img src="images/2.png" alt="PGD Results for Dataset 1">
-                <p>Description of PGD attack results on Dataset 1, highlighting the adversarial examples generated by Projected Gradient Descent.</p>
+            <!-- Model 1 Dataset Section -->
+            <div id="model1-dataset" class="nested-tabcontent">
+                <h5>Dataset Description for KAN Model</h5>
+                <div class="dataset">
+                    <img src="images/5.png" alt="Dataset 1" class="dataset-image">
+                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
+                    <p>Dataset 1: CIFAR-10 dataset used for evaluating the generalization capability of the model against adversarial samples.</p>
+                </div>
+                <div class="dataset">
+                    <img src="images/5.png" alt="Dataset 2" class="dataset-image">
+                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
+                    <p>Dataset 2: Custom adversarial dataset, specifically created to test robustness under unique perturbations.</p>
+                </div>
+                <div class="dataset">
+                    <img src="images/5.png" alt="Dataset 3" class="dataset-image">
+                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
+                    <p>Dataset 3: A dataset combining CIFAR-10 and synthetic noise-based data for comprehensive evaluation.</p>
+                </div>
             </div>
 
-            <div id="CW1" class="method-content" style="display:none;">
-                <h5>CW Attack Results</h5>
-                <img src="images/3.png" alt="CW Results for Dataset 1">
-                <p>Description of CW attack results on Dataset 1, focusing on the effectiveness of the Carlini & Wagner attack.</p>
+            <!-- Model 1 Attack Methods Section -->
+            <div id="model1-attacks" class="nested-tabcontent">
+                <h5>Attack Methods on KAN Model</h5>
+                <div class="sub-tabs">
+                    <button class="sub-tablink" onclick="openMethod(event, 'FGSM_KAN')">FGSM Attack</button>
+                    <button class="sub-tablink" onclick="openMethod(event, 'PGD_KAN')">PGD Attack</button>
+                    <button class="sub-tablink" onclick="openMethod(event, 'CW_KAN')">CW Attack</button>
+                </div>
+
+                <!-- FGSM Attack with Slider -->
+                <div id="FGSM_KAN" class="method-content">
+                    <h6>FGSM Attack Results on KAN Model</h6>
+                    <div class="slider-container">
+                        <div class="slider">
+                            <div class="slide">
+                                <img src="images/3.png" alt="FGSM Result 1">
+                                <h6>Title: FGSM Adversarial Example 1</h6>
+                                <p>Description: This image shows the KAN model's output when subjected to FGSM with epsilon = 0.1.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                            <div class="slide">
+                                <img src="images/3.png" alt="FGSM Result 2">
+                                <h6>Title: FGSM Adversarial Example 2</h6>
+                                <p>Description: The output indicates the model's ability to handle FGSM perturbations with increased intensity (epsilon = 0.2).</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                        </div>
+                        <button class="prev" onclick="moveSlide(-1, 'FGSM_KAN')"><i class="fas fa-chevron-left"></i></button>
+                        <button class="next" onclick="moveSlide(1, 'FGSM_KAN')"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <p>The FGSM attack was used to test the robustness of KAN, illustrating how well the model can adapt to gradient-based perturbations.</p>
+                </div>
+
+                <!-- PGD Attack with Slider -->
+                <div id="PGD_KAN" class="method-content" style="display:none;">
+                    <h6>PGD Attack Results on KAN Model</h6>
+                    <div class="slider-container">
+                        <div class="slider">
+                            <div class="slide">
+                                <img src="images/3.png" alt="PGD Result 1">
+                                <h6>Title: PGD Adversarial Example 1</h6>
+                                <p>Description: This image shows the results of a projected gradient descent attack with 40 iterations on the KAN model.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                            <div class="slide">
+                                <img src="images/3.png" alt="PGD Result 2">
+                                <h6>Title: PGD Adversarial Example 2</h6>
+                                <p>Description: Demonstration of how iterative attacks affect the classification accuracy of KAN (iterations = 50, epsilon = 0.3).</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                        </div>
+                        <button class="prev" onclick="moveSlide(-1, 'PGD_KAN')"><i class="fas fa-chevron-left"></i></button>
+                        <button class="next" onclick="moveSlide(1, 'PGD_KAN')"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <p>The PGD attack results demonstrate the effectiveness of KAN in defending against iterative adversarial attacks.</p>
+                </div>
+
+                <!-- CW Attack with Slider -->
+                <div id="CW_KAN" class="method-content" style="display:none;">
+                    <h6>CW Attack Results on KAN Model</h6>
+                    <div class="slider-container">
+                        <div class="slider">
+                            <div class="slide">
+                                <img src="images/3.png" alt="CW Result 1">
+                                <h6>Title: CW Attack Example 1</h6>
+                                <p>Description: This result showcases the effect of the Carlini & Wagner attack on KAN, focusing on targeted misclassification.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                            <div class="slide">
+                                <img src="images/3.png" alt="CW Result 2">
+                                <h6>Title: CW Attack Example 2</h6>
+                                <p>Description: CW attack with different targeted classes to illustrate vulnerabilities and robustness mechanisms in KAN.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                        </div>
+                        <button class="prev" onclick="moveSlide(-1, 'CW_KAN')"><i class="fas fa-chevron-left"></i></button>
+                        <button class="next" onclick="moveSlide(1, 'CW_KAN')"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <p>The CW attack results indicate potential vulnerabilities and resilience points in the KAN model's structure.</p>
+                </div>
             </div>
         </div>
 
-        <!-- Content for Dataset 2 -->
-        <div id="Dataset2" class="tabcontent" style="display:none;">
-            <h4>Dataset 2: Attack and Defense Methods</h4>
-            <div class="sub-tabs">
-                <button class="sub-tablink" onclick="openMethod(event, 'FGSM2')">FGSM</button>
-                <button class="sub-tablink" onclick="openMethod(event, 'PGD2')">PGD</button>
-                <button class="sub-tablink" onclick="openMethod(event, 'CW2')">CW</button>
+        <!-- Content for Model 2 -->
+        <div id="model2" class="tabcontent">
+            <h4>Model 2: Multi-Layer Perceptron (MLP)</h4>
+
+            <div class="nested-tabs">
+                <button class="nested-tablink" onclick="openNestedTab(event, 'model2-description')">Model Description</button>
+                <button class="nested-tablink" onclick="openNestedTab(event, 'model2-dataset')">Dataset Description</button>
+                <button class="nested-tablink" onclick="openNestedTab(event, 'model2-attacks')">Attack Methods</button>
             </div>
 
-            <div id="FGSM2" class="method-content">
-                <h5>FGSM Attack Results</h5>
-                <img src="images/4.png" alt="FGSM Results for Dataset 2">
-                <p>Description of FGSM attack results on Dataset 2.</p>
+            <!-- Model 2 Description Section -->
+            <div id="model2-description" class="nested-tabcontent active">
+                <h5>Description of MLP Model</h5>
+                <img src="images/11.png" alt="MLP Model" class="model-image">
+                <p>The Multi-Layer Perceptron (MLP) is a fully connected feedforward neural network. It serves as a baseline architecture to evaluate the robustness of simpler neural networks when faced with adversarial examples.</p>
             </div>
 
-            <div id="PGD2" class="method-content" style="display:none;">
-                <h5>PGD Attack Results</h5>
-                <img src="images/5.png" alt="PGD Results for Dataset 2">
-                <p>Description of PGD attack results on Dataset 2.</p>
+            <!-- Model 2 Dataset Section -->
+            <div id="model2-dataset" class="nested-tabcontent">
+                <h5>Dataset Description for MLP Model</h5>
+                <div class="dataset">
+                    <img src="images/5.png" alt="Dataset 1" class="dataset-image">
+                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
+                    <p>Dataset 1: MNIST dataset, used to evaluate the model's basic ability to classify handwritten digits under adversarial perturbations.</p>
+                </div>
+                <div class="dataset">
+                    <img src="images/5.png" alt="Dataset 2" class="dataset-image">
+                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
+                    <p>Dataset 2: Fashion-MNIST dataset, utilized to test robustness with a broader set of more diverse image classes.</p>
+                </div>
+                <div class="dataset">
+                    <img src="images/5.png" alt="Dataset 3" class="dataset-image">
+                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
+                    <p>Dataset 3: Custom noise-injected dataset for evaluating resistance against adversarial noise.</p>
+                </div>
             </div>
 
-            <div id="CW2" class="method-content" style="display:none;">
-                <h5>CW Attack Results</h5>
-                <img src="images/4.png" alt="CW Results for Dataset 2">
-                <p>Description of CW attack results on Dataset 2.</p>
+            <!-- Model 2 Attack Methods Section -->
+            <div id="model2-attacks" class="nested-tabcontent">
+                <h5>Attack Methods on MLP Model</h5>
+                <p>MLP has been tested using a variety of gradient-based attacks, including FGSM, PGD, and CW attacks. These attacks help demonstrate the model's susceptibility to basic adversarial perturbations and how it compares to more complex architectures.</p>
             </div>
         </div>
 
-        <!-- Content for Dataset 3 -->
-        <div id="Dataset3" class="tabcontent" style="display:none;">
-            <h4>Dataset 3: Attack and Defense Methods</h4>
-            <div class="sub-tabs">
-                <button class="sub-tablink" onclick="openMethod(event, 'FGSM3')">FGSM</button>
-                <button class="sub-tablink" onclick="openMethod(event, 'PGD3')">PGD</button>
-                <button class="sub-tablink" onclick="openMethod(event, 'CW3')">CW</button>
+        <!-- Content for Model 3 -->
+        <div id="model3" class="tabcontent">
+            <h4>Model 3: Convolutional Neural Network (CNN)</h4>
+
+            <div class="nested-tabs">
+                <button class="nested-tablink" onclick="openNestedTab(event, 'model3-description')">Model Description</button>
+                <button class="nested-tablink" onclick="openNestedTab(event, 'model3-dataset')">Dataset Description</button>
+                <button class="nested-tablink" onclick="openNestedTab(event, 'model3-attacks')">Attack Methods</button>
             </div>
 
-            <div id="FGSM3" class="method-content">
-                <h5>FGSM Attack Results</h5>
-                <img src="images/5.png" alt="FGSM Results for Dataset 3">
-                <p>Description of FGSM attack results on Dataset 3.</p>
+            <!-- Model 3 Description Section -->
+            <div id="model3-description" class="nested-tabcontent active">
+                <h5>Description of CNN Model</h5>
+                <img src="images/11.png" alt="CNN Model" class="model-image">
+                <p>The Convolutional Neural Network (CNN) model is widely used in image classification tasks. This model is evaluated for its robustness against adversarial examples like FGSM, PGD, and CW, focusing on its convolutional layers' ability to resist perturbations.</p>
             </div>
 
-            <div id="PGD3" class="method-content" style="display:none;">
-                <h5>PGD Attack Results</h5>
-                <img src="images/3.png" alt="PGD Results for Dataset 3">
-                <p>Description of PGD attack results on Dataset 3.</p>
+            <!-- Model 3 Dataset Section -->
+            <div id="model3-dataset" class="nested-tabcontent">
+                <h5>Dataset Description for CNN Model</h5>
+                <div class="dataset">
+                    <img src="images/5.png" alt="Dataset 1" class="dataset-image">
+                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
+                    <p>Dataset 1: CIFAR-10, used to test the basic classification capabilities and adversarial robustness of the CNN model.</p>
+                </div>
+                <div class="dataset">
+                    <img src="images/5.png" alt="Dataset 2" class="dataset-image">
+                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
+                    <p>Dataset 2: ImageNet subset, aimed at testing the model's performance on a more diverse and larger set of classes under adversarial attacks.</p>
+                </div>
+                <div class="dataset">
+                    <img src="images/5.png" alt="Dataset 3" class="dataset-image">
+                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
+                    <p>Dataset 3: Custom high-resolution dataset to evaluate the performance in detailed and large-scale adversarial conditions.</p>
+                </div>
             </div>
 
-            <div id="CW3" class="method-content" style="display:none;">
-                <h5>CW Attack Results</h5>
-                <img src="images/4.png" alt="CW Results for Dataset 3">
-                <p>Description of CW attack results on Dataset 3.</p>
+            <!-- Model 3 Attack Methods Section -->
+            <div id="model3-attacks" class="nested-tabcontent">
+                <h5>Attack Methods on CNN Model</h5>
+                <div class="sub-tabs">
+                    <button class="sub-tablink" onclick="openMethod(event, 'FGSM_CNN')">FGSM Attack</button>
+                    <button class="sub-tablink" onclick="openMethod(event, 'PGD_CNN')">PGD Attack</button>
+                    <button class="sub-tablink" onclick="openMethod(event, 'CW_CNN')">CW Attack</button>
+                </div>
+
+                <!-- FGSM Attack with Slider -->
+                <div id="FGSM_CNN" class="method-content">
+                    <h6>FGSM Attack Results on CNN Model</h6>
+                    <div class="slider-container">
+                        <div class="slider">
+                            <div class="slide">
+                                <img src="images/3.png" alt="FGSM Result 1">
+                                <h6>Title: FGSM Attack Example 1</h6>
+                                <p>Description: This image showcases the CNN model's response to FGSM with epsilon = 0.1.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                            <div class="slide">
+                                <img src="images/3.png" alt="FGSM Result 2">
+                                <h6>Title: FGSM Attack Example 2</h6>
+                                <p>Description: Illustration of the CNN's classification when exposed to a higher epsilon value of 0.2 under FGSM attack.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                        </div>
+                        <button class="prev" onclick="moveSlide(-1, 'FGSM_CNN')"><i class="fas fa-chevron-left"></i></button>
+                        <button class="next" onclick="moveSlide(1, 'FGSM_CNN')"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <p>The FGSM attack highlights areas where the CNN model can be improved to withstand simple, fast gradient perturbations.</p>
+                </div>
+
+                <!-- PGD Attack with Slider -->
+                <div id="PGD_CNN" class="method-content" style="display:none;">
+                    <h6>PGD Attack Results on CNN Model</h6>
+                    <div class="slider-container">
+                        <div class="slider">
+                            <div class="slide">
+                                <img src="images/3.png" alt="PGD Result 1">
+                                <h6>Title: PGD Attack Example 1</h6>
+                                <p>Description: CNN's output after being attacked with PGD at 30 iterations with epsilon = 0.3.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                            <div class="slide">
+                                <img src="images/3.png" alt="PGD Result 2">
+                                <h6>Title: PGD Attack Example 2</h6>
+                                <p>Description: The model's resilience is tested further with 50 PGD iterations and an increased epsilon value.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                        </div>
+                        <button class="prev" onclick="moveSlide(-1, 'PGD_CNN')"><i class="fas fa-chevron-left"></i></button>
+                        <button class="next" onclick="moveSlide(1, 'PGD_CNN')"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <p>PGD attack results show how the iterative nature of the attack impacts the CNN model's classification accuracy and robustness.</p>
+                </div>
+
+                <!-- CW Attack with Slider -->
+                <div id="CW_CNN" class="method-content" style="display:none;">
+                    <h6>CW Attack Results on CNN Model</h6>
+                    <div class="slider-container">
+                        <div class="slider">
+                            <div class="slide">
+                                <img src="images/3.png" alt="CW Result 1">
+                                <h6>Title: CW Attack Example 1</h6>
+                                <p>Description: The CNN model is subjected to the CW attack, aiming for targeted misclassification with minimal perturbation.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                            <div class="slide">
+                                <img src="images/3.png" alt="CW Result 2">
+                                <h6>Title: CW Attack Example 2</h6>
+                                <p>Description: Evaluating the CW attack's impact on different class targets within the CNN model.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                        </div>
+                        <button class="prev" onclick="moveSlide(-1, 'CW_CNN')"><i class="fas fa-chevron-left"></i></button>
+                        <button class="next" onclick="moveSlide(1, 'CW_CNN')"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <p>The CW attack demonstrates both the vulnerabilities and possible strengths of the CNN in facing sophisticated adversarial attempts.</p>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 SIE Lab</p>
+        <p>&copy; 2024 SIE Lab, Chungbuk National University. All rights reserved.</p>
     </footer>
 
 </body>
