@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neural Networks Adversarial Robustness Evaluation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="tabs.js" defer></script> <!-- JavaScript to handle tab functionality -->
     <style>
         /* General Styles */
         * {
@@ -75,7 +73,7 @@
 
         /* Abstract Section */
         .abstract-section {
-            text-align: center;
+            text-align: justify;
             padding: 30px;
             background-color: #f9f9f9;
             margin-bottom: 20px;
@@ -122,7 +120,7 @@
         }
 
         /* Tabs Styling */
-        .tabs {
+        .tabs, .nested-tabs, .sub-tabs {
             overflow: hidden;
             background-color: #f0f0f0;
             display: flex;
@@ -132,7 +130,7 @@
             border-radius: 10px;
         }
 
-        .tablink {
+        .tabs button, .nested-tabs button, .sub-tabs button {
             background-color: inherit;
             border: none;
             outline: none;
@@ -143,17 +141,17 @@
             font-weight: bold;
         }
 
-        .tablink:hover {
+        .tabs button:hover, .nested-tabs button:hover, .sub-tabs button:hover {
             background-color: #ccc;
             color: #333;
         }
 
-        .tablink.active {
+        .tabs button.active, .nested-tabs button.active, .sub-tabs button.active {
             background-color: #007bff;
             color: white;
         }
 
-        .tabcontent {
+        .tabcontent, .nested-tabcontent, .method-content {
             display: none;
             padding: 20px;
             border: 1px solid #ccc;
@@ -163,44 +161,7 @@
             margin-bottom: 30px;
         }
 
-        .tabcontent.active {
-            display: block;
-        }
-
-        /* Nested Tabs Styling */
-        .nested-tabs {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .nested-tablink {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 10px 15px;
-            transition: 0.3s;
-            font-size: 1rem;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        .nested-tablink:hover {
-            background-color: #0056b3;
-        }
-
-        .nested-tabcontent {
-            display: none;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-            margin-top: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .nested-tabcontent.active {
+        .tabcontent.active, .nested-tabcontent.active, .method-content.active {
             display: block;
         }
 
@@ -269,6 +230,7 @@
             cursor: pointer;
             border-radius: 50%;
             font-size: 1.5rem;
+            z-index: 1;
         }
 
         button.prev {
@@ -313,14 +275,115 @@
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Set the first model tab as active when page loads
-            document.querySelector(".tablink").classList.add("active");
-            document.getElementById("model1").classList.add("active");
-        });
+            // Function to handle tab switching
+            function setupTabs(tabClass, contentClass) {
+                const tabs = document.querySelectorAll(tabClass);
+                const contents = document.querySelectorAll(contentClass);
 
-        function openFullImage(url) {
-            window.open(url, '_blank').focus();
-        }
+                tabs.forEach(tab => {
+                    tab.addEventListener("click", function() {
+                        // Remove active class from all tabs
+                        tabs.forEach(t => t.classList.remove("active"));
+                        // Hide all content
+                        contents.forEach(c => c.classList.remove("active"));
+                        // Add active class to clicked tab
+                        this.classList.add("active");
+                        // Show corresponding content
+                        const target = this.getAttribute("data-tab");
+                        document.getElementById(target).classList.add("active");
+                    });
+                });
+
+                // Activate the first tab by default
+                if (tabs.length > 0) {
+                    tabs[0].click();
+                }
+            }
+
+            // Initialize main tabs
+            setupTabs(".tablink", ".tabcontent");
+
+            // Initialize nested tabs within each main tab content
+            const nestedTabContainers = document.querySelectorAll(".tabcontent .nested-tabs");
+            nestedTabContainers.forEach(container => {
+                const parentContent = container.parentElement;
+                const nestedTabs = container.querySelectorAll(".nested-tablink");
+                const nestedContents = parentContent.querySelectorAll(".nested-tabcontent");
+                nestedTabs.forEach(tab => {
+                    tab.addEventListener("click", function() {
+                        // Remove active class from all nested tabs
+                        nestedTabs.forEach(t => t.classList.remove("active"));
+                        // Hide all nested contents
+                        nestedContents.forEach(c => c.classList.remove("active"));
+                        // Add active class to clicked tab
+                        this.classList.add("active");
+                        // Show corresponding nested content
+                        const target = this.getAttribute("data-tab");
+                        document.getElementById(target).classList.add("active");
+                    });
+                });
+
+                // Activate the first nested tab by default
+                if (nestedTabs.length > 0) {
+                    nestedTabs[0].click();
+                }
+            });
+
+            // Initialize sub-tabs (attack methods) within each attack results section
+            const subTabContainers = document.querySelectorAll(".tabcontent .nested-tabcontent .sub-tabs");
+            subTabContainers.forEach(container => {
+                const parentContent = container.parentElement;
+                const subTabs = container.querySelectorAll(".sub-tablink");
+                const subContents = parentContent.querySelectorAll(".method-content");
+                subTabs.forEach(tab => {
+                    tab.addEventListener("click", function() {
+                        // Remove active class from all sub-tabs
+                        subTabs.forEach(t => t.classList.remove("active"));
+                        // Hide all sub-contents
+                        subContents.forEach(c => c.classList.remove("active"));
+                        // Add active class to clicked tab
+                        this.classList.add("active");
+                        // Show corresponding sub-content
+                        const target = this.getAttribute("data-tab");
+                        document.getElementById(target).classList.add("active");
+                    });
+                });
+
+                // Activate the first sub-tab by default
+                if (subTabs.length > 0) {
+                    subTabs[0].click();
+                }
+            });
+
+            // Function to move slides
+            window.moveSlide = function(direction, sliderId) {
+                const slider = document.querySelector(`#${sliderId} .slider`);
+                const slides = slider.children.length;
+                const slideWidth = slider.clientWidth;
+                let currentTransform = getComputedStyle(slider).transform;
+                let currentTranslate = 0;
+
+                if (currentTransform !== 'none') {
+                    currentTranslate = parseInt(currentTransform.split(',')[4]);
+                }
+
+                let newTranslate = currentTranslate + direction * slideWidth;
+
+                // Boundaries
+                if (newTranslate > 0) {
+                    newTranslate = 0;
+                } else if (newTranslate < -slideWidth * (slides - 1)) {
+                    newTranslate = -slideWidth * (slides - 1);
+                }
+
+                slider.style.transform = `translateX(${newTranslate}px)`;
+            };
+
+            // Function to open full image
+            window.openFullImage = function(url) {
+                window.open(url, '_blank').focus();
+            };
+        });
     </script>
 </head>
 <body>
@@ -351,7 +414,15 @@
     <!-- Abstract Section -->
     <section class="abstract-section">
         <h4>Abstract</h4>
-        <p>This project focuses on evaluating the robustness of neural networks against adversarial attacks. We explore various neural network architectures, including KAN, Multi-Layer Perceptron (MLP), and Convolutional Neural Network (CNN). Each model is evaluated using different datasets and subjected to common adversarial attacks, such as FGSM, PGD, and CW. The aim is to determine the strengths and weaknesses of each model's architecture when facing adversarial perturbations.</p>
+        <p>Kolmogorov-Arnold Networks (KANs) are an innovative type of deep neural network architecture based on the theorem of Kolmogorov-Arnold representation.
+            KANs have demonstrated the potential to outperform Multi-Layer Perceptron (MLP) models regarding accuracy and interpretability in AI applications.
+            Notably, the current research landscape lacks a comprehensive exploration of the robustness of KANs, particularly in the context of adversarial attacks and defenses.
+            This paper aims to address this gap by evaluating the performance of various KAN architectures, such as KAN, MLP, KAN-Mixer, MLP-Mixer, KANConv_KAN, ConvNet_MLP, ConvNet_KAN, and KANConv_MLP models,
+            against adversarial attacks. Additionally, the paper examines the effectiveness of adversarial training in enhancing model robustness. Experiments were conducted on three datasets for traffic sign classification:
+            GTSRB, BTSD, and CTSD, covering different training scenarios, including standard training and adversarial training. Our results show that adversarial training significantly enhances the robustness of KAN-based models,
+            particularly KAN-Mixer and MLP-Mixer, by reducing the success rates of adversarial attacks while maintaining high accuracy on clean data.
+            hese findings underscore the potential of KAN methods to improve neural network security and reliability in adversarial attacks.
+        </p>
     </section>
 
     <!-- Models Section -->
@@ -360,9 +431,9 @@
 
         <!-- Model Tabs -->
         <div class="tabs">
-            <button class="tablink" onclick="openTab(event, 'model1')">Model 1: KAN</button>
-            <button class="tablink" onclick="openTab(event, 'model2')">Model 2: MLP</button>
-            <button class="tablink" onclick="openTab(event, 'model3')">Model 3: CNN</button>
+            <button class="tablink" data-tab="model1">Experiments 1: KAN vs MLP</button>
+            <button class="tablink" data-tab="model2">Experiments 2: KAN-Mixer vs MLP-Mixer</button>
+            <button class="tablink" data-tab="model3">Experiments 3: KANConv vs ConvNet</button>
         </div>
 
         <!-- Content for Model 1 -->
@@ -371,35 +442,38 @@
 
             <!-- Nested Tabs for Model 1 -->
             <div class="nested-tabs">
-                <button class="nested-tablink" onclick="openNestedTab(event, 'model1-description')">Model Description</button>
-                <button class="nested-tablink" onclick="openNestedTab(event, 'model1-dataset')">Dataset Description</button>
-                <button class="nested-tablink" onclick="openNestedTab(event, 'model1-attacks')">Attack Methods</button>
+                <button class="nested-tablink" data-tab="model1-description">Model Description</button>
+                <button class="nested-tablink" data-tab="model1-dataset">Dataset</button>
+                <button class="nested-tablink" data-tab="model1-attacks">Attack Results</button>
             </div>
 
             <!-- Model 1 Description Section -->
-            <div id="model1-description" class="nested-tabcontent active">
+            <div id="model1-description" class="nested-tabcontent">
                 <h5>Description of KAN Model</h5>
-                <img src="images/11.png" alt="KAN Model" class="model-image">
-                <p>The KAN is designed to leverage domain-specific knowledge to improve adversarial robustness. It enhances the capability of neural networks to adapt to adversarial attacks by incorporating structured domain information effectively.</p>
+                <img src="images/kan-mlp.png" alt="KAN Model" class="model-image">
+                <p>In contrast, the MLP model is a baseline comparison to the KAN architecture. The MLP consists of two fully connected hidden layers, identical in structure to the KAN model, with 256 units in the first layer and 128 units in the second layer. The activation function used in the MLP is ReLU, which is commonly used for its simplicity and computational efficiency.
+                <br>These KANLinear layers are key to the model's flexibility. They use grid-based kernels with grid size = 5 and spline order = 3, scaled by 1.0. The grid is dynamically updated within a range of -1 to 1 using a grid eps of 0.02, enhancing adaptability to the data distribution. The activation function used in the KAN model is SiLU, which allows for smoother gradient flow during backpropagation. Regularization is enforced through adaptive B-splines, which helps control overfitting. Following the configuration outlined in Efficient KAN.
+                <br>Both models' output layers consist of units corresponding to the number of classes in the datasets. For training, we used the AdamW optimizer with a learning rate of 0.001 and a weight decay of 1e-4, training over 100 epochs with a batch size of 64. The cross-entropy loss function was employed to evaluate classification performance.
+                </p>
             </div>
 
             <!-- Model 1 Dataset Section -->
             <div id="model1-dataset" class="nested-tabcontent">
-                <h5>Dataset Description for KAN Model</h5>
+                <h5>Dataset Class Distribution</h5>
                 <div class="dataset">
-                    <img src="images/5.png" alt="Dataset 1" class="dataset-image">
-                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
-                    <p>Dataset 1: CIFAR-10 dataset used for evaluating the generalization capability of the model against adversarial samples.</p>
+                    <p>BTSRB Dataset: The BTSD includes a total of 62 classes, categorized into three superclasses: mandatory, prohibitive, and danger classes. The dataset is divided into 4,591 training images and 2,534 test images, providing variety in sign appearances to assess model robustness, depicted in Figure.</p>
+                    <img src="images/BTSRB.png" alt="Dataset 1" class="dataset-image">
+                    <a href="images/BTSRB.png" class="view-full-btn" onclick="openFullImage('images/BTSRB.png'); return false;">View Full Image</a>
                 </div>
                 <div class="dataset">
-                    <img src="images/5.png" alt="Dataset 2" class="dataset-image">
-                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
-                    <p>Dataset 2: Custom adversarial dataset, specifically created to test robustness under unique perturbations.</p>
+                    <p>CTSRB Dataset:  China's CTSD comprises 6,164 images in 58 categories, with 4,170 training images and 1,994 test images, offering a well-annotated dataset frequently used in traffic sign recognition research, illustrated in Figure.</p>
+                    <img src="images/CTSRB.png" alt="Dataset 2" class="dataset-image">
+                    <a href="images/CTSRB.png" class="view-full-btn" onclick="openFullImage('images/CTSRB.png'); return false;">View Full Image</a>
                 </div>
                 <div class="dataset">
-                    <img src="images/5.png" alt="Dataset 3" class="dataset-image">
-                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
-                    <p>Dataset 3: A dataset combining CIFAR-10 and synthetic noise-based data for comprehensive evaluation.</p>
+                    <p>GTSRB Dataset: The GTSRB dataset, widely used to benchmark traffic sign classification models, contains 43 classes with 39,209 training images and 12,630 test images, offering a diverse representation of German traffic signs, as shown in Figure.</p>
+                    <img src="images/GTSRB.png" alt="Dataset 3" class="dataset-image">
+                    <a href="images/GTSRB.png" class="view-full-btn" onclick="openFullImage('images/GTSRB.png'); return false;">View Full Image</a>
                 </div>
             </div>
 
@@ -407,9 +481,10 @@
             <div id="model1-attacks" class="nested-tabcontent">
                 <h5>Attack Methods on KAN Model</h5>
                 <div class="sub-tabs">
-                    <button class="sub-tablink" onclick="openMethod(event, 'FGSM_KAN')">FGSM Attack</button>
-                    <button class="sub-tablink" onclick="openMethod(event, 'PGD_KAN')">PGD Attack</button>
-                    <button class="sub-tablink" onclick="openMethod(event, 'CW_KAN')">CW Attack</button>
+                    <button class="sub-tablink" data-tab="FGSM_KAN">FGSM Attack</button>
+                    <button class="sub-tablink" data-tab="PGD_KAN">PGD Attack</button>
+                    <button class="sub-tablink" data-tab="BIM_KAN">BIM Attack</button>
+                    <button class="sub-tablink" data-tab="CW_KAN">CW Attack</button>
                 </div>
 
                 <!-- FGSM Attack with Slider -->
@@ -418,7 +493,7 @@
                     <div class="slider-container">
                         <div class="slider">
                             <div class="slide">
-                                <img src="images/3.png" alt="FGSM Result 1">
+                                <img src="images/111.png" alt="FGSM Result 1">
                                 <h6>Title: FGSM Adversarial Example 1</h6>
                                 <p>Description: This image shows the KAN model's output when subjected to FGSM with epsilon = 0.1.</p>
                                 <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
@@ -433,11 +508,13 @@
                         <button class="prev" onclick="moveSlide(-1, 'FGSM_KAN')"><i class="fas fa-chevron-left"></i></button>
                         <button class="next" onclick="moveSlide(1, 'FGSM_KAN')"><i class="fas fa-chevron-right"></i></button>
                     </div>
-                    <p>The FGSM attack was used to test the robustness of KAN, illustrating how well the model can adapt to gradient-based perturbations.</p>
+                    <p>T-SNE was employed to visualize the latent space movement of clean and adversarial examples to further understand the impact of adversarial attacks and defense mechanisms.
+                        This visualization provides insights into how the internal feature representations of the models shift due to adversarial perturbations. Clean and attacked data points are projected into 2D space using t-SNE,
+                        and the movement between clean and adversarial versions is shown using lines.</p>
                 </div>
 
                 <!-- PGD Attack with Slider -->
-                <div id="PGD_KAN" class="method-content" style="display:none;">
+                <div id="PGD_KAN" class="method-content">
                     <h6>PGD Attack Results on KAN Model</h6>
                     <div class="slider-container">
                         <div class="slider">
@@ -460,21 +537,45 @@
                     <p>The PGD attack results demonstrate the effectiveness of KAN in defending against iterative adversarial attacks.</p>
                 </div>
 
+                <!-- BIM Attack with Slider -->
+                <div id="BIM_KAN" class="method-content">
+                    <h6>BIM Attack Results on KAN Model</h6>
+                    <div class="slider-container">
+                        <div class="slider">
+                            <div class="slide">
+                                <img src="images/3.png" alt="BIM Result 1">
+                                <h6>Title: BIM Adversarial Example 1</h6>
+                                <p>Description: BIM attack with step size=0.01 and iterations=100 on KAN model.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                            <div class="slide">
+                                <img src="images/3.png" alt="BIM Result 2">
+                                <h6>Title: BIM Adversarial Example 2</h6>
+                                <p>Description: Increased intensity of BIM attack to assess KAN model's robustness.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                        </div>
+                        <button class="prev" onclick="moveSlide(-1, 'BIM_KAN')"><i class="fas fa-chevron-left"></i></button>
+                        <button class="next" onclick="moveSlide(1, 'BIM_KAN')"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <p>BIM attack results highlight the KAN model's ability to withstand gradient-based iterative attacks.</p>
+                </div>
+
                 <!-- CW Attack with Slider -->
-                <div id="CW_KAN" class="method-content" style="display:none;">
+                <div id="CW_KAN" class="method-content">
                     <h6>CW Attack Results on KAN Model</h6>
                     <div class="slider-container">
                         <div class="slider">
                             <div class="slide">
                                 <img src="images/3.png" alt="CW Result 1">
                                 <h6>Title: CW Attack Example 1</h6>
-                                <p>Description: This result showcases the effect of the Carlini & Wagner attack on KAN, focusing on targeted misclassification.</p>
+                                <p>Description: The CW attack showcases targeted misclassification with minimal perturbation on KAN model.</p>
                                 <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
                             </div>
                             <div class="slide">
                                 <img src="images/3.png" alt="CW Result 2">
                                 <h6>Title: CW Attack Example 2</h6>
-                                <p>Description: CW attack with different targeted classes to illustrate vulnerabilities and robustness mechanisms in KAN.</p>
+                                <p>Description: Evaluating CW attack's impact on different class targets within the KAN model.</p>
                                 <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
                             </div>
                         </div>
@@ -491,42 +592,118 @@
             <h4>Model 2: Multi-Layer Perceptron (MLP)</h4>
 
             <div class="nested-tabs">
-                <button class="nested-tablink" onclick="openNestedTab(event, 'model2-description')">Model Description</button>
-                <button class="nested-tablink" onclick="openNestedTab(event, 'model2-dataset')">Dataset Description</button>
-                <button class="nested-tablink" onclick="openNestedTab(event, 'model2-attacks')">Attack Methods</button>
+                <button class="nested-tablink" data-tab="model2-description">Model Description</button>
+                <button class="nested-tablink" data-tab="model2-dataset">Dataset</button>
+                <button class="nested-tablink" data-tab="model2-attacks">Attack Results</button>
             </div>
 
             <!-- Model 2 Description Section -->
-            <div id="model2-description" class="nested-tabcontent active">
+            <div id="model2-description" class="nested-tabcontent">
                 <h5>Description of MLP Model</h5>
-                <img src="images/11.png" alt="MLP Model" class="model-image">
+                <img src="images/mixer.png" alt="MLP Model" class="model-image">
                 <p>The Multi-Layer Perceptron (MLP) is a fully connected feedforward neural network. It serves as a baseline architecture to evaluate the robustness of simpler neural networks when faced with adversarial examples.</p>
             </div>
 
             <!-- Model 2 Dataset Section -->
             <div id="model2-dataset" class="nested-tabcontent">
-                <h5>Dataset Description for MLP Model</h5>
+                <h5>Dataset Class Distribution</h5>
                 <div class="dataset">
-                    <img src="images/5.png" alt="Dataset 1" class="dataset-image">
-                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
-                    <p>Dataset 1: MNIST dataset, used to evaluate the model's basic ability to classify handwritten digits under adversarial perturbations.</p>
+                    <p>BTSRB Dataset: The BTSD includes a total of 62 classes, categorized into three superclasses: mandatory, prohibitive, and danger classes. The dataset is divided into 4,591 training images and 2,534 test images, providing variety in sign appearances to assess model robustness, depicted in Figure.</p>
+                    <img src="images/BTSRB.png" alt="Dataset 1" class="dataset-image">
+                    <a href="images/BTSRB.png" class="view-full-btn" onclick="openFullImage('images/BTSRB.png'); return false;">View Full Image</a>
                 </div>
                 <div class="dataset">
-                    <img src="images/5.png" alt="Dataset 2" class="dataset-image">
-                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
-                    <p>Dataset 2: Fashion-MNIST dataset, utilized to test robustness with a broader set of more diverse image classes.</p>
+                    <p>CTSRB Dataset:  China's CTSD comprises 6,164 images in 58 categories, with 4,170 training images and 1,994 test images, offering a well-annotated dataset frequently used in traffic sign recognition research, illustrated in Figure.</p>
+                    <img src="images/CTSRB.png" alt="Dataset 2" class="dataset-image">
+                    <a href="images/CTSRB.png" class="view-full-btn" onclick="openFullImage('images/CTSRB.png'); return false;">View Full Image</a>
                 </div>
                 <div class="dataset">
-                    <img src="images/5.png" alt="Dataset 3" class="dataset-image">
-                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
-                    <p>Dataset 3: Custom noise-injected dataset for evaluating resistance against adversarial noise.</p>
+                    <p>GTSRB Dataset: The GTSRB dataset, widely used to benchmark traffic sign classification models, contains 43 classes with 39,209 training images and 12,630 test images, offering a diverse representation of German traffic signs, as shown in Figure.</p>
+                    <img src="images/GTSRB.png" alt="Dataset 3" class="dataset-image">
+                    <a href="images/GTSRB.png" class="view-full-btn" onclick="openFullImage('images/GTSRB.png'); return false;">View Full Image</a>
                 </div>
             </div>
 
             <!-- Model 2 Attack Methods Section -->
             <div id="model2-attacks" class="nested-tabcontent">
                 <h5>Attack Methods on MLP Model</h5>
-                <p>MLP has been tested using a variety of gradient-based attacks, including FGSM, PGD, and CW attacks. These attacks help demonstrate the model's susceptibility to basic adversarial perturbations and how it compares to more complex architectures.</p>
+                <div class="sub-tabs">
+                    <button class="sub-tablink" data-tab="FGSM_MLP">FGSM Attack</button>
+                    <button class="sub-tablink" data-tab="PGD_MLP">PGD Attack</button>
+                    <button class="sub-tablink" data-tab="CW_MLP">CW Attack</button>
+                </div>
+
+                <!-- FGSM Attack with Slider -->
+                <div id="FGSM_MLP" class="method-content">
+                    <h6>FGSM Attack Results on MLP Model</h6>
+                    <div class="slider-container">
+                        <div class="slider">
+                            <div class="slide">
+                                <img src="images/3.png" alt="FGSM Result 1">
+                                <h6>Title: FGSM Adversarial Example 1</h6>
+                                <p>Description: This image shows the MLP model's output when subjected to FGSM with epsilon = 0.1.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                            <div class="slide">
+                                <img src="images/3.png" alt="FGSM Result 2">
+                                <h6>Title: FGSM Adversarial Example 2</h6>
+                                <p>Description: The output indicates the MLP model's ability to handle FGSM perturbations with increased intensity (epsilon = 0.2).</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                        </div>
+                        <button class="prev" onclick="moveSlide(-1, 'FGSM_MLP')"><i class="fas fa-chevron-left"></i></button>
+                        <button class="next" onclick="moveSlide(1, 'FGSM_MLP')"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <p>T-SNE visualization provides insights into how the MLP model's internal feature representations shift due to FGSM adversarial perturbations.</p>
+                </div>
+
+                <!-- PGD Attack with Slider -->
+                <div id="PGD_MLP" class="method-content">
+                    <h6>PGD Attack Results on MLP Model</h6>
+                    <div class="slider-container">
+                        <div class="slider">
+                            <div class="slide">
+                                <img src="images/3.png" alt="PGD Result 1">
+                                <h6>Title: PGD Adversarial Example 1</h6>
+                                <p>Description: MLP's output after being attacked with PGD at 30 iterations with epsilon = 0.3.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                            <div class="slide">
+                                <img src="images/3.png" alt="PGD Result 2">
+                                <h6>Title: PGD Adversarial Example 2</h6>
+                                <p>Description: The model's resilience is tested further with 50 PGD iterations and an increased epsilon value.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                        </div>
+                        <button class="prev" onclick="moveSlide(-1, 'PGD_MLP')"><i class="fas fa-chevron-left"></i></button>
+                        <button class="next" onclick="moveSlide(1, 'PGD_MLP')"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <p>PGD attack results show the iterative nature of the attack impacts the MLP model's classification accuracy and robustness.</p>
+                </div>
+
+                <!-- CW Attack with Slider -->
+                <div id="CW_MLP" class="method-content">
+                    <h6>CW Attack Results on MLP Model</h6>
+                    <div class="slider-container">
+                        <div class="slider">
+                            <div class="slide">
+                                <img src="images/3.png" alt="CW Result 1">
+                                <h6>Title: CW Attack Example 1</h6>
+                                <p>Description: The MLP model is subjected to the CW attack, aiming for targeted misclassification with minimal perturbation.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                            <div class="slide">
+                                <img src="images/3.png" alt="CW Result 2">
+                                <h6>Title: CW Attack Example 2</h6>
+                                <p>Description: Evaluating the CW attack's impact on different class targets within the MLP model.</p>
+                                <a href="images/3.png" class="view-full-btn" onclick="openFullImage('images/3.png'); return false;">View Full Image</a>
+                            </div>
+                        </div>
+                        <button class="prev" onclick="moveSlide(-1, 'CW_MLP')"><i class="fas fa-chevron-left"></i></button>
+                        <button class="next" onclick="moveSlide(1, 'CW_MLP')"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <p>The CW attack demonstrates both the vulnerabilities and possible strengths of the MLP model in facing sophisticated adversarial attempts.</p>
+                </div>
             </div>
         </div>
 
@@ -535,35 +712,35 @@
             <h4>Model 3: Convolutional Neural Network (CNN)</h4>
 
             <div class="nested-tabs">
-                <button class="nested-tablink" onclick="openNestedTab(event, 'model3-description')">Model Description</button>
-                <button class="nested-tablink" onclick="openNestedTab(event, 'model3-dataset')">Dataset Description</button>
-                <button class="nested-tablink" onclick="openNestedTab(event, 'model3-attacks')">Attack Methods</button>
+                <button class="nested-tablink" data-tab="model3-description">Model Description</button>
+                <button class="nested-tablink" data-tab="model3-dataset">Dataset</button>
+                <button class="nested-tablink" data-tab="model3-attacks">Attack Results</button>
             </div>
 
             <!-- Model 3 Description Section -->
-            <div id="model3-description" class="nested-tabcontent active">
+            <div id="model3-description" class="nested-tabcontent">
                 <h5>Description of CNN Model</h5>
-                <img src="images/11.png" alt="CNN Model" class="model-image">
+                <img src="images/kacon.png" alt="CNN Model" class="model-image">
                 <p>The Convolutional Neural Network (CNN) model is widely used in image classification tasks. This model is evaluated for its robustness against adversarial examples like FGSM, PGD, and CW, focusing on its convolutional layers' ability to resist perturbations.</p>
             </div>
 
             <!-- Model 3 Dataset Section -->
             <div id="model3-dataset" class="nested-tabcontent">
-                <h5>Dataset Description for CNN Model</h5>
+                <h5>Dataset Class Distribution</h5>
                 <div class="dataset">
-                    <img src="images/5.png" alt="Dataset 1" class="dataset-image">
-                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
-                    <p>Dataset 1: CIFAR-10, used to test the basic classification capabilities and adversarial robustness of the CNN model.</p>
+                    <p>BTSRB Dataset: The BTSD includes a total of 62 classes, categorized into three superclasses: mandatory, prohibitive, and danger classes. The dataset is divided into 4,591 training images and 2,534 test images, providing variety in sign appearances to assess model robustness, depicted in Figure.</p>
+                    <img src="images/BTSRB.png" alt="Dataset 1" class="dataset-image">
+                    <a href="images/BTSRB.png" class="view-full-btn" onclick="openFullImage('images/BTSRB.png'); return false;">View Full Image</a>
                 </div>
                 <div class="dataset">
-                    <img src="images/5.png" alt="Dataset 2" class="dataset-image">
-                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
-                    <p>Dataset 2: ImageNet subset, aimed at testing the model's performance on a more diverse and larger set of classes under adversarial attacks.</p>
+                    <p>CTSRB Dataset:  China's CTSD comprises 6,164 images in 58 categories, with 4,170 training images and 1,994 test images, offering a well-annotated dataset frequently used in traffic sign recognition research, illustrated in Figure.</p>
+                    <img src="images/CTSRB.png" alt="Dataset 2" class="dataset-image">
+                    <a href="images/CTSRB.png" class="view-full-btn" onclick="openFullImage('images/CTSRB.png'); return false;">View Full Image</a>
                 </div>
                 <div class="dataset">
-                    <img src="images/5.png" alt="Dataset 3" class="dataset-image">
-                    <a href="images/5.png" class="view-full-btn" onclick="openFullImage('images/5.png'); return false;">View Full Image</a>
-                    <p>Dataset 3: Custom high-resolution dataset to evaluate the performance in detailed and large-scale adversarial conditions.</p>
+                    <p>GTSRB Dataset: The GTSRB dataset, widely used to benchmark traffic sign classification models, contains 43 classes with 39,209 training images and 12,630 test images, offering a diverse representation of German traffic signs, as shown in Figure.</p>
+                    <img src="images/GTSRB.png" alt="Dataset 3" class="dataset-image">
+                    <a href="images/GTSRB.png" class="view-full-btn" onclick="openFullImage('images/GTSRB.png'); return false;">View Full Image</a>
                 </div>
             </div>
 
@@ -571,9 +748,9 @@
             <div id="model3-attacks" class="nested-tabcontent">
                 <h5>Attack Methods on CNN Model</h5>
                 <div class="sub-tabs">
-                    <button class="sub-tablink" onclick="openMethod(event, 'FGSM_CNN')">FGSM Attack</button>
-                    <button class="sub-tablink" onclick="openMethod(event, 'PGD_CNN')">PGD Attack</button>
-                    <button class="sub-tablink" onclick="openMethod(event, 'CW_CNN')">CW Attack</button>
+                    <button class="sub-tablink" data-tab="FGSM_CNN">FGSM Attack</button>
+                    <button class="sub-tablink" data-tab="PGD_CNN">PGD Attack</button>
+                    <button class="sub-tablink" data-tab="CW_CNN">CW Attack</button>
                 </div>
 
                 <!-- FGSM Attack with Slider -->
@@ -597,11 +774,13 @@
                         <button class="prev" onclick="moveSlide(-1, 'FGSM_CNN')"><i class="fas fa-chevron-left"></i></button>
                         <button class="next" onclick="moveSlide(1, 'FGSM_CNN')"><i class="fas fa-chevron-right"></i></button>
                     </div>
-                    <p>The FGSM attack highlights areas where the CNN model can be improved to withstand simple, fast gradient perturbations.</p>
+                    <p>T-SNE was employed to visualize the latent space movement of clean and adversarial examples to further understand the impact of adversarial attacks and defense mechanisms.
+                        This visualization provides insights into how the internal feature representations of the models shift due to adversarial perturbations. Clean and attacked data points are projected into 2D space using t-SNE,
+                        and the movement between clean and adversarial versions is shown using lines.</p>
                 </div>
 
                 <!-- PGD Attack with Slider -->
-                <div id="PGD_CNN" class="method-content" style="display:none;">
+                <div id="PGD_CNN" class="method-content">
                     <h6>PGD Attack Results on CNN Model</h6>
                     <div class="slider-container">
                         <div class="slider">
@@ -625,7 +804,7 @@
                 </div>
 
                 <!-- CW Attack with Slider -->
-                <div id="CW_CNN" class="method-content" style="display:none;">
+                <div id="CW_CNN" class="method-content">
                     <h6>CW Attack Results on CNN Model</h6>
                     <div class="slider-container">
                         <div class="slider">
