@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Networks Adversarial Robustness Evaluation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f9fafc;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Section */
+        .header-section {
+            background-color: #7aa3cc;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            max-width: 100px;
+            max-height: 80px;
+            object-fit: contain;
+        }
+
+        /* Title Section */
+        .title-section {
+            text-align: center;
+            padding: 40px;
+            background-color: #ffffff;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .title-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #003366;
+        }
+
+        .title-section h2, .title-section h3 {
+            font-weight: 300;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        a {
+            color: #1664b8;
+            text-decoration: none;
+        }
+
+        /* Abstract Section */
+        .abstract-section {
+            text-align: justify;
+            padding: 30px;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .abstract-section h4 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #003366;
+        }
+
+        .abstract-section p {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Tabs Styling */
+        .tabs, .nested-tabs, .sub-tabs {
+            overflow: hidden;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding-top: 10px;
+            border-radius: 10px;
+        }
+
+        .tabs button, .nested-tabs button, .sub-tabs button {
+            background-color: inherit;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 15px 25px;
+            transition: 0.3s;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .tabs button:hover, .nested-tabs button:hover, .sub-tabs button:hover {
+            background-color: #ccc;
+            color: #333;
+        }
+
+        .tabs button.active, .nested-tabs button.active, .sub-tabs button.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .tabcontent, .nested-tabcontent, .method-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .tabcontent.active, .nested-tabcontent.active, .method-content.active {
+            display: block;
+        }
+
+        /* Image Styling */
+        .model-image, .dataset-image, .attack-image {
+            width: 100%;
+            height: 300px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sliders Styling */
+        .slider-container {
+            position: relative;
+            max-width: 600px;
+            margin: 20px auto;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .slide img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .slide h6 {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            color: #003366;
+        }
+
+        .slide p {
+            font-size: 1rem;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        /* Navigation Buttons */
+        button.prev, button.next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            z-index: 1;
+        }
+
+        button.prev {
+            left: 10px;
+        }
+
+        button.next {
+            right: 10px;
+        }
+
+        button.prev:hover, button.next:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: #003366;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Full-size Image Button */
+        .view-full-btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-full-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Function to handle tab switching
+            function setupTabs(tabClass, contentClass) {
+                const tabs = document.querySelectorAll(tabClass);
+                const contents = document.querySelectorAll(contentClass);
+
+                tabs.forEach(tab => {
+                    tab.addEventListener("click", function() {
+                        // Remove active class from all tabs
+                        tabs.forEach(t => t.classList.remove("active"));
+                        // Hide all content
+                        contents.forEach(c => c.classList.remove("active"));
+                        // Add active class to clicked tab
+                        this.classList.add("active");
+                        // Show corresponding content
+                        const target = this.getAttribute("data-tab");
+                        document.getElementById(target).classList.add("active");
+                    });
+                });
+
+                // Activate the first tab by default
+                if (tabs.length > 0) {
+                    tabs[0].click();
+                }
+            }
+
+            // Initialize main tabs
+            setupTabs(".tablink", ".tabcontent");
+
+            // Initialize nested tabs within each main tab content
+            const nestedTabContainers = document.querySelectorAll(".tabcontent .nested-tabs");
+            nestedTabContainers.forEach(container => {
+                const parentContent = container.parentElement;
+                const nestedTabs = container.querySelectorAll(".nested-tablink");
+                const nestedContents = parentContent.querySelectorAll(".nested-tabcontent");
+                nestedTabs.forEach(tab => {
+                    tab.addEventListener("click", function() {
+                        // Remove active class from all nested tabs
+                        nestedTabs.forEach(t => t.classList.remove("active"));
+                        // Hide all nested contents
+                        nestedContents.forEach(c => c.classList.remove("active"));
+                        // Add active class to clicked tab
+                        this.classList.add("active");
+                        // Show corresponding nested content
+                        const target = this.getAttribute("data-tab");
+                        document.getElementById(target).classList.add("active");
+                    });
+                });
+
+                // Activate the first nested tab by default
+                if (nestedTabs.length > 0) {
+                    nestedTabs[0].click();
+                }
+            });
+
+            // Initialize sub-tabs (attack methods) within each attack results section
+            const subTabContainers = document.querySelectorAll(".tabcontent .nested-tabcontent .sub-tabs");
+            subTabContainers.forEach(container => {
+                const parentContent = container.parentElement;
+                const subTabs = container.querySelectorAll(".sub-tablink");
+                const subContents = parentContent.querySelectorAll(".method-content");
+                subTabs.forEach(tab => {
+                    tab.addEventListener("click", function() {
+                        // Remove active class from all sub-tabs
+                        subTabs.forEach(t => t.classList.remove("active"));
+                        // Hide all sub-contents
+                        subContents.forEach(c => c.classList.remove("active"));
+                        // Add active class to clicked tab
+                        this.classList.add("active");
+                        // Show corresponding sub-content
+                        const target = this.getAttribute("data-tab");
+                        document.getElementById(target).classList.add("active");
+                    });
+                });
+
+                // Activate the first sub-tab by default
+                if (subTabs.length > 0) {
+                    subTabs[0].click();
+                }
+            });
+
+            // Function to move slides
+            window.moveSlide = function(direction, sliderId) {
+                const slider = document.querySelector(`#${sliderId} .slider`);
+                const slides = slider.children.length;
+                const slideWidth = slider.clientWidth;
+                let currentTransform = getComputedStyle(slider).transform;
+                let currentTranslate = 0;
+
+                if (currentTransform !== 'none') {
+                    currentTranslate = parseInt(currentTransform.split(',')[4]);
+                }
+
+                let newTranslate = currentTranslate + direction * slideWidth;
+
+                // Boundaries
+                if (newTranslate > 0) {
+                    newTranslate = 0;
+                } else if (newTranslate < -slideWidth * (slides - 1)) {
+                    newTranslate = -slideWidth * (slides - 1);
+                }
+
+                slider.style.transform = `translateX(${newTranslate}px)`;
+            };
+
+            // Function to open full image
+            window.openFullImage = function(url) {
+                window.open(url, '_blank').focus();
+            };
+        });
+    </script>
+</head>
+<body>
+
+    <!-- Header Section with University/Institute Logos -->
+    <header class="header-section">
+        <div class="header-content">
+            <img src="images/logo_unv.png" alt="University Logo" class="logo">
+            <h3>Software Intelligence Engineering Lab, Department of Computer Science <br> Chungbuk National University</h3>
+            <img src="images/logo_lab.png" alt="Lab Logo" class="logo">
+        </div>
+    </header>
+
+    <!-- Main Title and Author Section -->
+    <section class="title-section">
+        <h1>Neural Networks Adversarial Robustness Evaluation</h1>
+        <h2>Authors: Ahmed Dawod Mohammed Ibrahum, Zhengyu Shang, Jang-Eui Hong</h2>
+        <h3>Affiliations: Software Intelligence Engineering Lab, Chungbuk National University</h3>
+        <h3>Visit Our Lab: <a href="https://selab.chungbuk.ac.kr/" target="_blank">https://selab.chungbuk.ac.kr/</a></h3>
+    </section>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="paper.html" class="btn">Download Paper</a>
+        <a href="bibtex.html" class="btn">BibTeX</a>
+        <a href="code.html" class="btn">Code</a>
+
+    </div>
+    
+
+
+    <!-- Abstract Section -->
+    <section class="abstract-section">
+        <h4>Will be available soon</h4>
+    </section>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 SIE Lab, Chungbuk National University. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
