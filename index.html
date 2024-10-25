@@ -7,8 +7,7 @@
     <title>How Resilient Are Kolmogorov-Arnold Networks in Classification Tasks? A Robustness Investigation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- <script defer src="creatingimage.js"></script>
-    <script defer src="    fullview.js"></script> -->
+    <!-- <script defer src="    fullview.js"></script> -->
 
     <style>
         /* General Styles */
@@ -293,6 +292,26 @@
         .view-full-btn:hover {
             background-color: #0056b3;
         }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .folder {
+            margin: 20px;
+        }
+
+        .folder h2 {
+            text-align: center;
+        }
+
+        .folder img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin: 5px;
+        }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -446,7 +465,7 @@
             This paper comprehensively evaluates the robustness of various KAN architectures—including KAN, KAN-Mixer,
             KANConv_KAN, and KANConv_MLP—against adversarial attacks, a critical aspect that has been underexplored in
             current research.
-            We compare these models with MLP-based architectures such as MLP, MLP-Mixer, and ConvNet\_MLP across three
+            We compare these models with MLP-based architectures such as MLP, MLP-Mixer, and ConvNet-MLP across three
             traffic sign classification datasets: GTSRB, BTSD, and CTSD.
             The models were subjected to a range of adversarial attacks (FGSM, PGD, C&W, and BIM) with varying
             perturbation levels epsilon=0.01,0.1,1 and were trained under different strategies, including standard
@@ -5899,9 +5918,16 @@
                 <div id="model3-description" class="nested-tabcontent">
                     <h5>Description of CNN Model</h5>
                     <img src="images/kacon.png" alt="CNN Model" class="model-image">
-                    <p>The Convolutional Neural Network (CNN) model is widely used in image classification tasks.
-                        This model is evaluated for its robustness against adversarial examples like FGSM, PGD, and
-                        CW, focusing on its convolutional layers' ability to resist perturbations.</p>
+                    <p>In this section, we investigate the effectiveness of KANs and CNN for traffic sign classification. We are implementing and comparing four different architectures: ConvNet-MLP, ConvNet-KAN, KANConv-MLP, and KANConv-KAN, based on the research by bodner and azam convolutionalkan.
+                    All models are trained using a batch size of 512 over 100 epochs, leveraging the Adam optimizer with a learning rate of 0.001 and employing Cross-Entropy Loss as the primary loss function.
+                    </br>
+                        The ConvNet-MLP model is the baseline architecture, combining standard convolutional layers with a fully connected MLP. It consists of four convolutional layers: two with 32 filters and a kernel size 5x5, followed by two with 64 filters and a kernel size 3x3. These layers are interspersed with ReLU activations and 2x2 max-pooling layers, leading to fully connected layers with 256 neurons for class output.
+                    </br>
+                        The ConvNet-KAN model builds on this by replacing the fully connected layers with a KAN linear layer, using a 10x10 grid and a spline order of 3 to model complex nonlinear relationships. This architecture retains the initial convolutional layers from the ConvNet-MLP model but introduces the KAN layer after flattening the feature maps to capture more sophisticated patterns in the data.
+                    </br>
+                        The KANConv-MLP model further explores the potential of KAN by incorporating it directly into the convolutional layers. It employs two KAN-based convolutional layers, each consisting of five independent 3x3 convolutions, followed by max-pooling. These KAN layers aim to enhance the model's feature extraction capabilities by leveraging the adaptive spline functions of KAN during convolution. The output of these KAN-based convolutions is then passed through fully connected layers, similar to those in the ConvNet-MLP model.
+                    </br>
+                        Finally, the KANConv-KAN model fully integrates KAN into the convolutional and fully connected layers, using KAN-based layers throughout the network. It applies two KAN convolutional layers, similar to those in KANConv-MLP, and follows them with a KAN linear layer for classification. This model is designed to fully leverage KAN's non-linear, adaptive properties to potentially achieve better performance in recognizing traffic signs, especially under adversarial conditions.</p>
                 </div>
 
                 <!-- Model 3 Dataset Section -->
@@ -5936,8 +5962,8 @@
 
                 <!-- Model 3 Attack Methods Section -->
                 <div id="model3-attacks" class="nested-tabcontent">
-                    <div id="attack-method-tabs-e" class="sub-tabs"-e></div>
-                    <div id="attack-method-content-e"></div>
+                    <div id="gallery" class="gallery"></div>
+                    <script src="creatingimage.js"></script>
                 </div>
             </div>
 
